@@ -1,0 +1,97 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f5f5f5;
+}
+
+.app {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+}
+
+.screen {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.hidden {
+    display: none;
+}
+
+.price-box {
+    background: white;
+    padding: 15px;
+    margin: 20px 0;
+}
+
+.note {
+    font-size: 12px;
+    color: gray;
+}
+
+.options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    width: 200px;
+}
+
+    .card:hover {
+        background: #eee;
+    }
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+    button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.field-group {
+    margin: 10px 0 14px;
+    text-align: left;
+}
+
+.field-error {
+    margin: 6px 0 0;
+    color: #c62828;
+    font-size: 13px;
+}
+
+.payment {
+    margin-top: 20px;
+}
+
+.screen-header {
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.back-btn {
+    background: #eee;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+}

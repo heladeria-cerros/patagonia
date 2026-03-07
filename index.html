@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heladería Cerros | Pedido</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app">
+
+        <!-- BIENVENIDA -->
+        <section id="screen-welcome" class="screen">
+            <h1>Heladería Cerros</h1>
+            <p>Helado artesanal en Lago Puelo</p>
+
+            <div class="price-box">
+                <p>1 kg: $24000</p>
+                <p>1/2 kg: $15000</p>
+                <p>Delivery: $4000</p>
+                <p class="note">Radio de entrega: 5 km</p>
+            </div>
+
+            <button onclick="startOrder()">Pedir helado</button>
+        </section>
+
+        <!-- TAMAÑO -->
+        <section id="screen-size" class="screen hidden">
+            <div class="screen-header">
+                <button class="back-btn" onclick="goBack()">← Volver</button>
+            </div>
+
+            <h2>Elegí el tamaño</h2>
+
+            <div class="options">
+                <div class="card" onclick="selectSize('1/2 kg',15000,3)">
+                    <h3>1/2 kg</h3>
+                    <p>$15000</p>
+                    <p>Hasta 3 sabores</p>
+                </div>
+
+                <div class="card" onclick="selectSize('1 kg',24000,4)">
+                    <h3>1 kg</h3>
+                    <p>$24000</p>
+                    <p>Hasta 4 sabores</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SABORES -->
+        <section id="screen-flavors" class="screen hidden">
+            <div class="screen-header">
+                <button class="back-btn" onclick="goBack()">← Volver</button>
+            </div>
+
+            <h2>Elegí tus sabores</h2>
+            <p id="flavor-limit"></p>
+
+            <div id="flavor-list" class="options"></div>
+
+            <button id="flavor-next" onclick="goAddress()" disabled>
+                Continuar
+            </button>
+        </section>
+
+        <!-- DATOS -->
+        <section id="screen-address" class="screen hidden">
+            <div class="screen-header">
+                <button class="back-btn" onclick="goBack()">← Volver</button>
+            </div>
+
+            <h2>Datos de entrega</h2>
+
+            <div class="field-group">
+                <input id="name" placeholder="Nombre">
+                <p id="name-error" class="field-error hidden">El nombre es obligatorio.</p>
+            </div>
+
+            <div class="field-group">
+                <input id="phone" placeholder="Teléfono">
+                <p id="phone-error" class="field-error hidden">El teléfono es obligatorio.</p>
+            </div>
+
+            <div class="field-group">
+                <input id="address" placeholder="Dirección">
+                <p id="address-error" class="field-error hidden">La dirección es obligatoria.</p>
+            </div>
+
+            <div class="field-group">
+                <input id="reference" placeholder="Referencia (opcional)">
+            </div>
+
+            <button id="address-next" onclick="goSummary()" disabled>
+                Continuar
+            </button>
+        </section>
+
+        <!-- RESUMEN -->
+        <section id="screen-summary" class="screen hidden">
+            <div class="screen-header">
+                <button class="back-btn" onclick="goBack()">← Volver</button>
+            </div>
+
+            <h2>Resumen del pedido</h2>
+
+            <div id="order-summary"></div>
+
+            <div class="payment">
+                <label>
+                    <input type="radio" name="payment" value="Efectivo">
+                    Efectivo
+                </label>
+
+                <label>
+                    <input type="radio" name="payment" value="Transferencia">
+                    Transferencia
+                </label>
+            </div>
+
+            <button onclick="confirmOrder()">Confirmar</button>
+        </section>
+
+        <!-- TRANSFERENCIA -->
+        <section id="screen-transfer" class="screen hidden">
+            <h2>Transferencia</h2>
+
+            <p>Alias: heladeria.cerros</p>
+            <p id="transfer-total"></p>
+
+            <button onclick="sendWhatsApp()">Ya pagué</button>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
