@@ -178,7 +178,7 @@ function goSummary() {
     show("screen-summary");
 }
 
-async function confirmOrder() {
+function confirmOrder() {
 
     const payment = document.querySelector("input[name='payment']:checked");
 
@@ -189,9 +189,7 @@ async function confirmOrder() {
 
     order.payment = payment.value;
 
-    /* GUARDAR PEDIDO EN GOOGLE SHEETS */
-
-    await saveOrder();
+    saveOrder();
 
     if (order.payment === "Transferencia") {
 
@@ -251,24 +249,43 @@ function goBack() {
     document.getElementById(previous).classList.remove("hidden");
 }
 
-async function saveOrder() {
+function saveOrder() {
 
     const total = order.price + deliveryPrice;
 
-    const data = new URLSearchParams();
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "https://script.google.com/macros/s/AKfycbYB-VsBHOkhyV74_kBcMqa6yX19Y_C1Y0Flq1DQuwShIpkltL2W6TYLB_7SzXmd94wDcA/exec";
+    form.target = "hiddenFrame";
 
-    data.append("name", order.name);
-    data.append("phone", order.phone);
-    data.append("address", order.address);
-    data.append("reference", order.reference);
-    data.append("size", order.size);
-    data.append("flavors", order.flavors.join(", "));
-    data.append("payment", order.payment);
-    data.append("total", total);
+    function addField(name, value) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+    }
 
-    await fetch("https://script.google.com/macros/s/AKfycbyB-VsBHOkhyV74_kBcMqa6yX19Y_C1Y0FlqlDQuwShIpkltL2W6TYLB_7SzXmd94wDcA/exec", {
-        method: "POST",
-        body: data
-    });
+    addField("name", order.name);
+    addField("phone", order.phone);
+    addField("address", order.address);
+    addField("reference", order.reference);
+    addField("size", order.size);
+    addField("flavors", order.flavors.join(", "));
+    addField("payment", order.payment);
+    addField("total", total);
+
+    document.body.appendChild(form);
+
+    let iframe = document.getElementById("hiddenFrame");
+
+    if (!iframe) {
+        iframe = document.createElement("iframe");
+        iframe.name = "hiddenFrame";
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
+    }
+
+    form.submit();
 
 }
