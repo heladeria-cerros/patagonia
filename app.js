@@ -1,6 +1,4 @@
-let historyStack = [];
-
-let historyStack = [];
+Ôªølet historyStack = [];
 
 document.addEventListener("DOMContentLoaded", () => {
     const bar = document.getElementById("progress-bar");
@@ -12,7 +10,7 @@ const deliveryPrice = 4000;
 const flavors = [
     "Chocolate Tenebroso",
     "Dulce de leche crocante",
-    "SambayÛn",
+    "Sambay√≥n",
     "Frutos del bosque",
     "Torta de queso",
     "Quarkmix",
@@ -114,7 +112,7 @@ function setupFlavors() {
     list.innerHTML = "";
 
     document.getElementById("flavor-limit").innerText =
-        "ElegÌ entre 1 y " + order.maxFlavors + " sabores";
+        "Eleg√≠ entre 1 y " + order.maxFlavors + " sabores";
 
     order.flavors = [];
 
@@ -219,12 +217,12 @@ function goSummary() {
 
     document.getElementById("order-summary").innerHTML =
         `
-        <p><strong>TamaÒo:</strong> ${order.size}</p>
+        <p><strong>Tama√±o:</strong> ${order.size}</p>
         <p><strong>Sabores:</strong></p>
         <p>${order.flavors.join(", ")}</p>
-        <p><strong>DirecciÛn:</strong> ${order.address}${order.reference ? " ∑ " + order.reference : ""}</p>
-        <p>?? Helado: $${fmt(order.price)}</p>
-        <p>?? Delivery: $${fmt(deliveryPrice)}</p>
+        <p><strong>Direcci√≥n:</strong> ${order.address}${order.reference ? " ¬∑ " + order.reference : ""}</p>
+        <p>üç¶ Helado: $${fmt(order.price)}</p>
+        <p>üõµ Delivery: $${fmt(deliveryPrice)}</p>
         <h3>Total: $${fmt(total)}</h3>
         `;
 
@@ -236,7 +234,7 @@ function confirmOrder() {
     const payment = document.querySelector("input[name='payment']:checked");
 
     if (!payment) {
-        alert("ElegÌ forma de pago");
+        alert("Eleg√≠ forma de pago");
         return;
     }
 
@@ -275,7 +273,7 @@ ${order.size}
 Sabores:
 ${order.flavors.join("\n")}
 
-DirecciÛn:
+Direcci√≥n:
 ${order.address}
 
 Referencia:
