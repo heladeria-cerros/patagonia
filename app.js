@@ -285,7 +285,7 @@ Pago: ${order.payment}`
     );
 
     window.open(
-        "https://wa.me/5492944164000?text=" + message,
+        "https://wa.me/5492944299457?text=" + message,
         "_blank"
     );
 }
