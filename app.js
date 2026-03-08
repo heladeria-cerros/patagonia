@@ -255,7 +255,7 @@ function saveOrder() {
 
     const form = document.createElement("form");
     form.method = "POST";
-    form.action = "https://script.google.com/macros/s/AKfycbyOGBD7nvLo4hReGvd5sHc0naIfP8BkK-DEUcO1h1fRNhLgDktnSbBzDBCiy03n6GAoqA/exec";
+    form.action = "https://script.google.com/macros/s/AKfycbySKHS2NkIaD6ukxECbTalTFzWD8SYJMrhNQzLIrZHlSkHjxh70zBJpvcTFZaoWbMXtcg/exec";
     form.target = "hiddenFrame";
 
     function addField(name, value) {
