@@ -1,5 +1,12 @@
 let historyStack = [];
 
+let historyStack = [];
+
+document.addEventListener("DOMContentLoaded", () => {
+    const bar = document.getElementById("progress-bar");
+    if (bar) bar.style.display = "none";
+});
+
 const deliveryPrice = 4000;
 
 const flavors = [
@@ -27,6 +34,37 @@ const order = {
     payment: null
 };
 
+const screenSteps = {
+    "screen-welcome":  0,
+    "screen-size":     1,
+    "screen-flavors":  2,
+    "screen-address":  3,
+    "screen-summary":  4,
+    "screen-transfer": 4
+};
+
+function updateProgressBar(screenId) {
+    const activeStep = screenSteps[screenId] || 0;
+    const steps = document.querySelectorAll(".progress-step");
+    const lines = document.querySelectorAll(".progress-line");
+    const bar   = document.getElementById("progress-bar");
+
+    if (!bar) return;
+
+    bar.style.display = activeStep === 0 ? "none" : "flex";
+
+    steps.forEach((step, i) => {
+        const stepNum = parseInt(step.dataset.step, 10);
+        step.classList.remove("active", "done");
+        if (stepNum === activeStep) step.classList.add("active");
+        else if (stepNum < activeStep) step.classList.add("done");
+    });
+
+    lines.forEach((line, i) => {
+        line.classList.toggle("done", i + 1 < activeStep);
+    });
+}
+
 function show(screen) {
     const current = document.querySelector(".screen:not(.hidden)");
 
@@ -40,6 +78,17 @@ function show(screen) {
 
     document.getElementById(screen).classList.remove("hidden");
 
+    updateProgressBar(screen);
+
+    const card = document.querySelector(".order-card");
+    if (card && screen !== "screen-welcome" && screen !== "screen-size") {
+        const cardTop = card.getBoundingClientRect().top + window.scrollY;
+        const viewportCenter = window.scrollY + window.innerHeight / 2;
+        if (cardTop > viewportCenter || window.scrollY < cardTop - 20) {
+            card.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    }
+
     if (screen === "screen-address") {
         setupAddressValidation();
     }
@@ -47,6 +96,7 @@ function show(screen) {
 
 function startOrder() {
     show("screen-size");
+    document.querySelector(".order-shell").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function selectSize(size, price, max) {
@@ -165,14 +215,17 @@ function goSummary() {
 
     const total = order.price + deliveryPrice;
 
+    const fmt = n => n.toLocaleString("es-AR");
+
     document.getElementById("order-summary").innerHTML =
         `
-        <p>${order.size}</p>
-        <p>Sabores:</p>
+        <p><strong>Tamaño:</strong> ${order.size}</p>
+        <p><strong>Sabores:</strong></p>
         <p>${order.flavors.join(", ")}</p>
-        <p>Helado: $${order.price}</p>
-        <p>Delivery: $${deliveryPrice}</p>
-        <h3>Total: $${total}</h3>
+        <p><strong>Dirección:</strong> ${order.address}${order.reference ? " · " + order.reference : ""}</p>
+        <p>?? Helado: $${fmt(order.price)}</p>
+        <p>?? Delivery: $${fmt(deliveryPrice)}</p>
+        <h3>Total: $${fmt(total)}</h3>
         `;
 
     show("screen-summary");
@@ -195,8 +248,10 @@ function confirmOrder() {
 
         const total = order.price + deliveryPrice;
 
+        const fmt = n => n.toLocaleString("es-AR");
+
         document.getElementById("transfer-total").innerText =
-            "Total a transferir: $" + total;
+            "$" + fmt(total);
 
         show("screen-transfer");
 

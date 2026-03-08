@@ -5,133 +5,237 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heladería Cerros | Pedido</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <div class="app">
 
-        <!-- BIENVENIDA -->
-        <section id="screen-welcome" class="screen">
-            <h1>Heladería Cerros</h1>
-            <p>Helado artesanal en Lago Puelo</p>
+    <!-- HEADER -->
+    <header class="site-header">
+        <img src="assets/logo.png" alt="Heladería Cerros" class="site-logo">
+    </header>
 
-            <div class="price-box">
-                <p>1 kg: $24000</p>
-                <p>1/2 kg: $15000</p>
-                <p>Delivery: $4000</p>
-                <p class="note">Radio de entrega: 5 km</p>
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <p class="hero-tagline">Helado artesanal · Lago Puelo</p>
+            <h1 class="hero-title">Sabores que<br>se sienten.</h1>
+            <p class="hero-subtitle">Hacé tu pedido en minutos y recibís en la puerta.</p>
+            <button class="btn-hero" onclick="startOrder()">🍦 Pedir helado</button>
+            <a class="hero-scroll-hint" href="#order-section" onclick="startOrder(); return false;" aria-label="Ver pedido">
+                <span>↓</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- ORDER ASSISTANT -->
+    <main class="order-shell" id="order-section">
+        <div class="order-card">
+
+            <!-- PROGRESS BAR -->
+            <div class="progress-bar" id="progress-bar" aria-hidden="true">
+                <div class="progress-step active" data-step="1">
+                    <div class="progress-dot"></div>
+                    <span>Tamaño</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="2">
+                    <div class="progress-dot"></div>
+                    <span>Sabores</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="3">
+                    <div class="progress-dot"></div>
+                    <span>Entrega</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="4">
+                    <div class="progress-dot"></div>
+                    <span>Confirmar</span>
+                </div>
             </div>
 
-            <button onclick="startOrder()">Pedir helado</button>
-        </section>
+            <!-- BIENVENIDA -->
+            <section id="screen-welcome" class="screen">
+                <div class="screen-icon">🍨</div>
+                <h2 class="screen-title">¡Bienvenido!</h2>
+                <p class="screen-subtitle">Pedido con delivery a domicilio</p>
 
-        <!-- TAMAÑO -->
-        <section id="screen-size" class="screen hidden">
-            <div class="screen-header">
-                <button class="back-btn" onclick="goBack()">← Volver</button>
-            </div>
-
-            <h2>Elegí el tamaño</h2>
-
-            <div class="options">
-                <div class="card" onclick="selectSize('1/2 kg',15000,3)">
-                    <h3>1/2 kg</h3>
-                    <p>$15000</p>
-                    <p>Hasta 3 sabores</p>
+                <div class="price-box">
+                    <div class="price-row">
+                        <span class="price-label">½ kg</span>
+                        <span class="price-value">$15.000</span>
+                        <span class="price-note">hasta 3 sabores</span>
+                    </div>
+                    <div class="price-divider"></div>
+                    <div class="price-row">
+                        <span class="price-label">1 kg</span>
+                        <span class="price-value">$24.000</span>
+                        <span class="price-note">hasta 4 sabores</span>
+                    </div>
+                    <div class="price-divider"></div>
+                    <div class="price-row">
+                        <span class="price-label">🛵 Delivery</span>
+                        <span class="price-value">$4.000</span>
+                        <span class="price-note">radio 5 km</span>
+                    </div>
                 </div>
 
-                <div class="card" onclick="selectSize('1 kg',24000,4)">
-                    <h3>1 kg</h3>
-                    <p>$24000</p>
-                    <p>Hasta 4 sabores</p>
+                <button class="btn-primary" onclick="startOrder()">Empezar pedido →</button>
+            </section>
+
+            <!-- TAMAÑO -->
+            <section id="screen-size" class="screen hidden">
+                <div class="screen-header">
+                    <button class="back-btn" onclick="goBack()">← Volver</button>
                 </div>
-            </div>
-        </section>
 
-        <!-- SABORES -->
-        <section id="screen-flavors" class="screen hidden">
-            <div class="screen-header">
-                <button class="back-btn" onclick="goBack()">← Volver</button>
-            </div>
+                <div class="screen-icon">⚖️</div>
+                <h2 class="screen-title">¿Cuánto querés?</h2>
+                <p class="screen-subtitle">Elegí el tamaño del pote</p>
 
-            <h2>Elegí tus sabores</h2>
-            <p id="flavor-limit"></p>
+                <div class="options size-options">
+                    <div class="card size-card" onclick="selectSize('1/2 kg',15000,3)">
+                        <div class="size-emoji">🥄</div>
+                        <h3>½ kg</h3>
+                        <p class="size-price">$15.000</p>
+                        <p class="size-flavors">Hasta 3 sabores</p>
+                    </div>
 
-            <div id="flavor-list" class="options"></div>
+                    <div class="card size-card" onclick="selectSize('1 kg',24000,4)">
+                        <div class="size-emoji">🍨</div>
+                        <h3>1 kg</h3>
+                        <p class="size-price">$24.000</p>
+                        <p class="size-flavors">Hasta 4 sabores</p>
+                    </div>
+                </div>
+            </section>
 
-            <button id="flavor-next" onclick="goAddress()" disabled>
-                Continuar
-            </button>
-        </section>
+            <!-- SABORES -->
+            <section id="screen-flavors" class="screen hidden">
+                <div class="screen-header">
+                    <button class="back-btn" onclick="goBack()">← Volver</button>
+                </div>
 
-        <!-- DATOS -->
-        <section id="screen-address" class="screen hidden">
-            <div class="screen-header">
-                <button class="back-btn" onclick="goBack()">← Volver</button>
-            </div>
+                <div class="screen-icon">🎨</div>
+                <h2 class="screen-title">Tus sabores</h2>
+                <p class="screen-subtitle" id="flavor-limit"></p>
 
-            <h2>Datos de entrega</h2>
+                <div id="flavor-list" class="options flavor-grid"></div>
 
-            <div class="field-group">
-                <input id="name" placeholder="Nombre">
-                <p id="name-error" class="field-error hidden">El nombre es obligatorio.</p>
-            </div>
+                <button id="flavor-next" class="btn-primary" onclick="goAddress()" disabled>
+                    Continuar →
+                </button>
+            </section>
 
-            <div class="field-group">
-                <input id="phone" placeholder="Teléfono">
-                <p id="phone-error" class="field-error hidden">El teléfono es obligatorio.</p>
-            </div>
+            <!-- DATOS -->
+            <section id="screen-address" class="screen hidden">
+                <div class="screen-header">
+                    <button class="back-btn" onclick="goBack()">← Volver</button>
+                </div>
 
-            <div class="field-group">
-                <input id="address" placeholder="Dirección">
-                <p id="address-error" class="field-error hidden">La dirección es obligatoria.</p>
-            </div>
+                <div class="screen-icon">📍</div>
+                <h2 class="screen-title">¿A dónde lo llevamos?</h2>
+                <p class="screen-subtitle">Completá tus datos de entrega</p>
 
-            <div class="field-group">
-                <input id="reference" placeholder="Referencia (opcional)">
-            </div>
+                <div class="field-group">
+                    <label class="field-label" for="name">Nombre</label>
+                    <input id="name" class="field-input" placeholder="Tu nombre completo" type="text">
+                    <p id="name-error" class="field-error hidden">El nombre es obligatorio.</p>
+                </div>
 
-            <button id="address-next" onclick="goSummary()" disabled>
-                Continuar
-            </button>
-        </section>
+                <div class="field-group">
+                    <label class="field-label" for="phone">Teléfono</label>
+                    <input id="phone" class="field-input" placeholder="Tu número de celular" type="tel">
+                    <p id="phone-error" class="field-error hidden">El teléfono es obligatorio.</p>
+                </div>
 
-        <!-- RESUMEN -->
-        <section id="screen-summary" class="screen hidden">
-            <div class="screen-header">
-                <button class="back-btn" onclick="goBack()">← Volver</button>
-            </div>
+                <div class="field-group">
+                    <label class="field-label" for="address">Dirección</label>
+                    <input id="address" class="field-input" placeholder="Calle y número" type="text">
+                    <p id="address-error" class="field-error hidden">La dirección es obligatoria.</p>
+                </div>
 
-            <h2>Resumen del pedido</h2>
+                <div class="field-group">
+                    <label class="field-label" for="reference">Referencia <span class="field-optional">(opcional)</span></label>
+                    <input id="reference" class="field-input" placeholder="Ej: casa verde con portón blanco" type="text">
+                </div>
 
-            <div id="order-summary"></div>
+                <button id="address-next" class="btn-primary" onclick="goSummary()" disabled>
+                    Ver resumen →
+                </button>
+            </section>
 
-            <div class="payment">
-                <label>
-                    <input type="radio" name="payment" value="Efectivo">
-                    Efectivo
-                </label>
+            <!-- RESUMEN -->
+            <section id="screen-summary" class="screen hidden">
+                <div class="screen-header">
+                    <button class="back-btn" onclick="goBack()">← Volver</button>
+                </div>
 
-                <label>
-                    <input type="radio" name="payment" value="Transferencia">
-                    Transferencia
-                </label>
-            </div>
+                <div class="screen-icon">✅</div>
+                <h2 class="screen-title">Resumen del pedido</h2>
+                <p class="screen-subtitle">Revisá y elegí cómo pagás</p>
 
-            <button onclick="confirmOrder()">Confirmar</button>
-        </section>
+                <div id="order-summary" class="summary-box"></div>
 
-        <!-- TRANSFERENCIA -->
-        <section id="screen-transfer" class="screen hidden">
-            <h2>Transferencia</h2>
+                <div class="payment">
+                    <p class="payment-title">Forma de pago</p>
+                    <div class="payment-options">
+                        <label class="payment-label">
+                            <input type="radio" name="payment" value="Efectivo">
+                            <span class="payment-card">
+                                <span class="payment-icon">💵</span>
+                                Efectivo
+                            </span>
+                        </label>
+                        <label class="payment-label">
+                            <input type="radio" name="payment" value="Transferencia">
+                            <span class="payment-card">
+                                <span class="payment-icon">📲</span>
+                                Transferencia
+                            </span>
+                        </label>
+                    </div>
+                </div>
 
-            <p>Alias: heladeria.cerros</p>
-            <p id="transfer-total"></p>
+                <button class="btn-primary btn-confirm" onclick="confirmOrder()">Confirmar pedido 🍦</button>
+            </section>
 
-            <button onclick="sendWhatsApp()">Ya pagué</button>
-        </section>
-    </div>
+            <!-- TRANSFERENCIA -->
+            <section id="screen-transfer" class="screen hidden">
+                <div class="screen-icon">📲</div>
+                <h2 class="screen-title">Transferencia bancaria</h2>
+                <p class="screen-subtitle">Realizá el pago y avisanos</p>
+
+                <div class="transfer-box">
+                    <div class="transfer-row">
+                        <span class="transfer-label">Alias</span>
+                        <span class="transfer-value">heladeria.cerros</span>
+                    </div>
+                    <div class="transfer-divider"></div>
+                    <div class="transfer-row">
+                        <span class="transfer-label">Monto</span>
+                        <span class="transfer-value" id="transfer-total"></span>
+                    </div>
+                </div>
+
+                <p class="transfer-note">Una vez realizada la transferencia, envianos el comprobante por WhatsApp.</p>
+
+                <button class="btn-primary" onclick="sendWhatsApp()">Ya pagué · Enviar comprobante →</button>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <p>Heladería Cerros · Lago Puelo, Chubut</p>
+        <p>Delivery dentro de un radio de 5 km</p>
+    </footer>
 
     <script src="app.js"></script>
 </body>
