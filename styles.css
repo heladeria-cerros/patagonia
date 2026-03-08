@@ -335,6 +335,17 @@ body {
     position: relative;
     text-align: center;
     animation: fadeIn .25s ease;
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+}
+
+#screen-welcome {
+    min-height: auto;
+}
+
+#screen-transfer {
+    min-height: 420px;
 }
 
 @keyframes fadeIn {
@@ -366,7 +377,7 @@ body {
 .screen-subtitle {
     font-size: .84rem;
     color: var(--text-muted);
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
 .screen-header {
@@ -390,14 +401,20 @@ body {
     pointer-events: auto;
     background: var(--cream-dark);
     border: none;
-    padding: 6px 10px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
     cursor: pointer;
-    border-radius: var(--radius-sm);
+    border-radius: 50%;
     font-family: 'Nunito', sans-serif;
-    font-size: .82rem;
-    font-weight: 600;
+    font-size: 1.1rem;
+    line-height: 1;
+    font-weight: 400;
     color: var(--teal);
     transition: background var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
     .back-btn:hover {
@@ -410,7 +427,7 @@ body {
 .btn-primary {
     display: block;
     width: 100%;
-    margin-top: 12px;
+    margin-top: auto;
     min-height: 44px;
     padding: 11px 18px;
     font-family: 'Nunito', sans-serif;
@@ -505,11 +522,13 @@ body {
     flex-wrap: wrap;
     gap: 8px;
     justify-content: center;
+    flex: 1;
 }
 
 .size-options {
     flex-wrap: nowrap;
-    gap: 8px;
+    gap: 10px;
+    width: 100%;
 }
 
 .card {
@@ -527,9 +546,9 @@ body {
     }
 
 .size-card {
-    padding: 14px 10px;
+    padding: 16px 8px;
     min-width: 0;
-    flex: 1;
+    flex: 1 1 50%;
     max-width: none;
     text-align: center;
 }
@@ -566,6 +585,8 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
     margin-bottom: 2px;
+    flex: 1;
+    align-content: start;
 }
 
     .flavor-grid .card {
@@ -595,7 +616,7 @@ body {
    ADDRESS FORM
    ============================================================ */
 .field-group {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     text-align: left;
 }
 
@@ -621,9 +642,9 @@ body {
     display: block;
     width: 100%;
     min-height: 44px;
-    padding: 10px 12px;
+    padding: 8px 12px;
     font-family: 'Nunito', sans-serif;
-    font-size: 1rem;
+    font-size: .95rem;
     color: var(--text);
     background: var(--cream);
     border: 2px solid var(--border);
@@ -663,20 +684,21 @@ body {
     background: var(--cream);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: 12px 12px;
+    padding: 10px 12px;
     text-align: left;
-    font-size: .86rem;
+    font-size: .82rem;
     margin-bottom: 4px;
+    line-height: 1.4;
 }
 
     .summary-box p {
-        margin-bottom: 6px;
+        margin-bottom: 4px;
         color: var(--text);
     }
 
     .summary-box h3 {
-        margin-top: 12px;
-        font-size: 1.2rem;
+        margin-top: 8px;
+        font-size: 1.1rem;
         font-family: 'Playfair Display', serif;
         color: var(--teal);
     }
@@ -837,6 +859,14 @@ body {
 
     .screen-title {
         font-size: 2rem;
+    }
+
+    .screen {
+        min-height: 480px;
+    }
+
+    #screen-welcome {
+        min-height: auto;
     }
 }
 
