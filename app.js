@@ -8,36 +8,57 @@ document.addEventListener("DOMContentLoaded", () => {
 const deliveryPrice = 4000;
 
 const flavors = [
-    "Chocolate Tenebroso",
-    "Dulce de leche crocante",
-    "Sambayón",
-    "Frutos del bosque",
-    "Torta de queso",
-    "Quarkmix",
-    "Naranja al agua"
+    "CHOCOLATE BLANCO C/FRAMBUESA",
+    "TENEBROSO",
+    "ANANA",
+    "BANANA SPLIT",
+    "COCO",
+    "DULCE DE LECHE CROCANTE ",
+    "FRUTILLA A LA CREMA",
+    "FRUTOS DEL BOSQUE A LA CREMA",
+    "MARACUYA",
+    "MENTA GRANIZADA",
+    "DOBLE DULCE DE LECHE",
+    "LIMON",
+    "SAMBAYON",
+    "TIRAMISU",
 ];
+
+const flavorMeta = {
+    "TENEBROSO": { img: "assets/flavors/tenebroso.png", color: "#f4e3d8", tag: "⭐ Favorito" },
+    "LIMON": { img: "assets/flavors/limon.png", color: "#fff8cc" },
+    "FRUTILLA A LA CREMA": { img: "assets/flavors/frutilla.png", color: "#ffe3ea" },
+    "MARACUYA": { img: "assets/flavors/maracuya.png", color: "#fff0d9" },
+    "COCO": { img: "assets/flavors/coco.png", color: "#f7f7f7" },
+    "MENTA GRANIZADA": { img: "assets/flavors/menta.png", color: "#e5fff2" },
+    "ANANA": { img: "assets/flavors/anana.png", color: "#fff5d6" },
+    "BANANA SPLIT": { img: "assets/flavors/banana.png", color: "#fff2cc" },
+    "FRUTOS DEL BOSQUE A LA CREMA": { img: "assets/flavors/bosque.png", color: "#f4e6ff" },
+    "DULCE DE LECHE CROCANTE ": { img: "assets/flavors/ddlcrocante.png", color: "#fff0e6", tag: "🔥 Popular" },
+    "DOBLE DULCE DE LECHE": { img: "assets/flavors/ddle.png", color: "#fff0e6" },
+    "SAMBAYON": { img: "assets/flavors/sambayon.png", color: "#fff7cc" },
+    "TIRAMISU": { img: "assets/flavors/tiramisu.png", color: "#f4ebe6" },
+    "CHOCOLATE BLANCO C/FRAMBUESA": { img: "assets/flavors/chocofram.png", color: "#ffe8ef" }
+};
 
 const order = {
     size: null,
     price: 0,
     maxFlavors: 0,
-
     flavors: [],
-
     name: "",
     phone: "",
     address: "",
     reference: "",
-
     payment: null
 };
 
 const screenSteps = {
-    "screen-welcome":  0,
-    "screen-size":     1,
-    "screen-flavors":  2,
-    "screen-address":  3,
-    "screen-summary":  4,
+    "screen-welcome": 0,
+    "screen-size": 1,
+    "screen-flavors": 2,
+    "screen-address": 3,
+    "screen-summary": 4,
     "screen-transfer": 4
 };
 
@@ -45,13 +66,13 @@ function updateProgressBar(screenId) {
     const activeStep = screenSteps[screenId] || 0;
     const steps = document.querySelectorAll(".progress-step");
     const lines = document.querySelectorAll(".progress-line");
-    const bar   = document.getElementById("progress-bar");
+    const bar = document.getElementById("progress-bar");
 
     if (!bar) return;
 
     bar.style.display = activeStep === 0 ? "none" : "flex";
 
-    steps.forEach((step, i) => {
+    steps.forEach((step) => {
         const stepNum = parseInt(step.dataset.step, 10);
         step.classList.remove("active", "done");
         if (stepNum === activeStep) step.classList.add("active");
@@ -119,23 +140,50 @@ function setupFlavors() {
     document.getElementById("flavor-next").disabled = true;
 
     flavors.forEach(f => {
-        const div = document.createElement("div");
-        div.className = "card";
-        div.innerText = f;
-        div.onclick = () => toggleFlavor(f, div);
-        list.appendChild(div);
+
+        const meta = flavorMeta[f] || {};
+
+        const card = document.createElement("div");
+        card.className = "card flavor-card";
+        card.style.background = meta.color || "white";
+
+        if (meta.img) {
+            const img = document.createElement("img");
+            img.src = meta.img;
+            img.className = "flavor-img";
+            card.appendChild(img);
+        }
+
+        if (meta.tag) {
+            const tag = document.createElement("div");
+            tag.className = "flavor-tag";
+            tag.innerText = meta.tag;
+            card.appendChild(tag);
+        }
+
+        const name = document.createElement("div");
+        name.className = "flavor-name";
+        name.innerText = f;
+
+        card.appendChild(name);
+
+        card.onclick = () => toggleFlavor(f, card);
+
+        list.appendChild(card);
     });
 }
 
 function toggleFlavor(flavor, element) {
     if (order.flavors.includes(flavor)) {
         order.flavors = order.flavors.filter(f => f !== flavor);
-        element.style.background = "white";
+        element.style.background = flavorMeta[flavor]?.color || "white";
+        element.classList.remove("selected");
     } else {
         if (order.flavors.length >= order.maxFlavors) return;
 
         order.flavors.push(flavor);
         element.style.background = "#c8f7c5";
+        element.classList.add("selected");
     }
 
     document.getElementById("flavor-next").disabled =
@@ -260,6 +308,7 @@ function confirmOrder() {
     }
 
 }
+
 function sendWhatsApp() {
     const total = order.price + deliveryPrice;
 
