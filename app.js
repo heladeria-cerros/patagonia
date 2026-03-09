@@ -391,6 +391,39 @@ Pago: ${order.payment}`
         "https://wa.me/5492944299457?text=" + message,
         "_blank"
     );
+
+    resetOrderState();
+}
+
+function resetOrderState() {
+    order.items = [];
+    order.size = null;
+    order.price = 0;
+    order.maxFlavors = 0;
+    order.flavors = [];
+    order.name = "";
+    order.phone = "";
+    order.address = "";
+    order.reference = "";
+    order.payment = null;
+    order.orderNumber = null;
+
+    historyStack = [];
+
+    const nameInput = document.getElementById("name");
+    const phoneInput = document.getElementById("phone");
+    const addressInput = document.getElementById("address");
+    const referenceInput = document.getElementById("reference");
+
+    if (nameInput) nameInput.value = "";
+    if (phoneInput) phoneInput.value = "";
+    if (addressInput) addressInput.value = "";
+    if (referenceInput) referenceInput.value = "";
+
+    const paymentInputs = document.querySelectorAll("input[name='payment']");
+    paymentInputs.forEach(input => input.checked = false);
+
+    show("screen-welcome");
 }
 
 function goBack() {
