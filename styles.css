@@ -838,11 +838,51 @@ body {
     color: var(--text-muted);
 }
 
+.transfer-value-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .transfer-value {
     font-size: 1.05rem;
     font-weight: 700;
     color: var(--teal);
     font-family: 'Playfair Display', serif;
+}
+
+.btn-copy {
+    background: var(--teal);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition);
+    color: var(--white);
+    padding: 0;
+}
+
+.btn-copy:hover {
+    background: var(--teal-light);
+    transform: scale(1.05);
+}
+
+.btn-copy:active {
+    transform: scale(0.95);
+}
+
+.btn-copy.copied {
+    background: var(--success);
+    animation: pulse 0.3s ease;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 .transfer-divider {

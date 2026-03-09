@@ -483,3 +483,18 @@ async function saveOrder() {
     await Promise.all(promises);
 
 }
+
+function copyAlias() {
+    const alias = document.getElementById("transfer-alias").innerText;
+    
+    navigator.clipboard.writeText(alias).then(() => {
+        const btn = event.target.closest(".btn-copy");
+        if (btn) {
+            btn.classList.add("copied");
+            setTimeout(() => btn.classList.remove("copied"), 1000);
+        }
+    }).catch(err => {
+        console.error("Error al copiar:", err);
+        alert("No se pudo copiar. Copiá manualmente: " + alias);
+    });
+}
