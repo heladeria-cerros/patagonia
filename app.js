@@ -119,6 +119,7 @@ function show(screen) {
 }
 
 function startOrder() {
+    resetOrderState();
     show("screen-size");
     document.querySelector(".order-shell").scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -391,8 +392,6 @@ Pago: ${order.payment}`
         "https://wa.me/5492944299457?text=" + message,
         "_blank"
     );
-
-    resetOrderState();
 }
 
 function resetOrderState() {
@@ -422,8 +421,6 @@ function resetOrderState() {
 
     const paymentInputs = document.querySelectorAll("input[name='payment']");
     paymentInputs.forEach(input => input.checked = false);
-
-    show("screen-welcome");
 }
 
 function goBack() {
