@@ -42,6 +42,7 @@ const flavorMeta = {
 };
 
 const order = {
+    items: [],
     size: null,
     price: 0,
     maxFlavors: 0,
@@ -50,7 +51,10 @@ const order = {
     phone: "",
     address: "",
     reference: "",
-    payment: null
+    payment: null,
+    get totalPrice() {
+        return this.items.reduce((sum, item) => sum + item.price, 0);
+    }
 };
 
 const screenSteps = {
@@ -230,7 +234,41 @@ function setupAddressValidation() {
 }
 
 function goAddress() {
+    saveCurrentPot();
     show("screen-address");
+}
+
+function saveCurrentPot() {
+    if (order.size && order.flavors.length > 0) {
+        const existingIndex = order.items.findIndex(
+            item => item.size === order.size && 
+                    JSON.stringify(item.flavors.sort()) === JSON.stringify([...order.flavors].sort())
+        );
+        
+        if (existingIndex === -1) {
+            order.items.push({
+                size: order.size,
+                price: order.price,
+                flavors: [...order.flavors]
+            });
+        }
+    }
+}
+
+function addAnotherPot() {
+    if (order.flavors.length === 0) {
+        alert("Primero elegí al menos un sabor para este pote");
+        return;
+    }
+    
+    saveCurrentPot();
+    
+    order.size = null;
+    order.price = 0;
+    order.maxFlavors = 0;
+    order.flavors = [];
+    
+    show("screen-size");
 }
 
 function goSummary() {
@@ -259,17 +297,25 @@ function goSummary() {
     order.address = addressInput.value.trim();
     order.reference = document.getElementById("reference").value.trim();
 
-    const total = order.price + deliveryPrice;
-
+    const total = order.totalPrice + deliveryPrice;
     const fmt = n => n.toLocaleString("es-AR");
+
+    let itemsHTML = "";
+    order.items.forEach((item, index) => {
+        itemsHTML += `
+        <div class="summary-item">
+            <p><strong>${item.size}</strong></p>
+            <p>${item.flavors.join(", ")}</p>
+        </div>
+        `;
+    });
 
     document.getElementById("order-summary").innerHTML =
         `
-        <p><strong>Tamaño:</strong> ${order.size}</p>
-        <p><strong>Sabores:</strong></p>
-        <p>${order.flavors.join(", ")}</p>
+        ${itemsHTML}
+        <div class="summary-divider"></div>
         <p><strong>Dirección:</strong> ${order.address}${order.reference ? " · " + order.reference : ""}</p>
-        <p>🍦 Helado: $${fmt(order.price)}</p>
+        <p>🍦 Helado: $${fmt(order.totalPrice)}</p>
         <p>🛵 Delivery: $${fmt(deliveryPrice)}</p>
         <h3>Total: $${fmt(total)}</h3>
         `;
@@ -292,7 +338,7 @@ function confirmOrder() {
 
     if (order.payment === "Transferencia") {
 
-        const total = order.price + deliveryPrice;
+        const total = order.totalPrice + deliveryPrice;
 
         const fmt = n => n.toLocaleString("es-AR");
 
@@ -310,19 +356,19 @@ function confirmOrder() {
 }
 
 function sendWhatsApp() {
-    const total = order.price + deliveryPrice;
+    const total = order.totalPrice + deliveryPrice;
+
+    let itemsText = "";
+    order.items.forEach((item, index) => {
+        itemsText += `${item.size}\n${item.flavors.join("\n")}\n\n`;
+    });
 
     const message = encodeURIComponent(
         `Hola!
 
 Pedido:
 
-${order.size}
-
-Sabores:
-${order.flavors.join("\n")}
-
-Dirección:
+${itemsText}Dirección:
 ${order.address}
 
 Referencia:
@@ -353,41 +399,51 @@ function goBack() {
 
 function saveOrder() {
 
-    const total = order.price + deliveryPrice;
+    const total = order.totalPrice + deliveryPrice;
+    const timestamp = Date.now();
 
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = "https://script.google.com/macros/s/AKfycbwyg7ZGAbzYVKahX_EFR7fNY9IhE_c6k9wmi0pOChMe9YLaVo9FcRt5m4ctoyVpTaFRQQ/exec";
-    form.target = "hiddenFrame";
+    order.items.forEach((item, index) => {
 
-    function addField(name, value) {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = name;
-        input.value = value;
-        form.appendChild(input);
-    }
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "https://script.google.com/macros/s/AKfycbwyg7ZGAbzYVKahX_EFR7fNY9IhE_c6k9wmi0pOChMe9YLaVo9FcRt5m4ctoyVpTaFRQQ/exec";
 
-    addField("name", order.name);
-    addField("phone", order.phone);
-    addField("address", order.address);
-    addField("reference", order.reference);
-    addField("size", order.size);
-    addField("flavors", order.flavors.join(", "));
-    addField("payment", order.payment);
-    addField("total", total);
+        const iframeName = "hiddenFrame_" + index;
 
-    document.body.appendChild(form);
+        form.target = iframeName;
 
-    let iframe = document.getElementById("hiddenFrame");
+        function addField(name, value) {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
+        }
 
-    if (!iframe) {
-        iframe = document.createElement("iframe");
-        iframe.name = "hiddenFrame";
+        addField("pedidoId", timestamp);
+        addField("itemIndex", index + 1);
+
+        addField("name", order.name);
+        addField("phone", order.phone);
+        addField("address", order.address);
+        addField("reference", order.reference);
+
+        addField("size", item.size);
+        addField("flavors", item.flavors.join(", "));
+
+        addField("payment", order.payment);
+        addField("total", total);
+
+        document.body.appendChild(form);
+
+        const iframe = document.createElement("iframe");
+        iframe.name = iframeName;
         iframe.style.display = "none";
-        document.body.appendChild(iframe);
-    }
 
-    form.submit();
+        document.body.appendChild(iframe);
+
+        form.submit();
+
+    });
 
 }
