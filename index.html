@@ -237,6 +237,30 @@
                 <button class="btn-primary" onclick="sendWhatsApp()">Ya pagué · Enviar comprobante →</button>
             </section>
 
+            <!-- PROCESANDO PEDIDO -->
+            <section id="screen-processing" class="screen hidden">
+                <div class="screen-icon">⏳</div>
+                <h2 class="screen-title">Procesando pedido...</h2>
+                <p class="screen-subtitle">Un momento por favor</p>
+                <div class="spinner"></div>
+            </section>
+
+            <!-- PEDIDO CONFIRMADO -->
+            <section id="screen-order-ready" class="screen hidden">
+                <div class="screen-icon">✅</div>
+                <h2 class="screen-title">¡Pedido confirmado!</h2>
+                <p class="screen-subtitle">Tu número de orden es:</p>
+                
+                <div class="order-number-box">
+                    <p class="order-number-label">Pedido Nº</p>
+                    <p class="order-number-value" id="order-number-display">---</p>
+                </div>
+
+                <p class="order-ready-note">Ahora enviá tu pedido por WhatsApp para coordinar la entrega</p>
+
+                <button class="btn-primary" onclick="sendWhatsApp()">Enviar por WhatsApp →</button>
+            </section>
+
         </div>
     </main>
 

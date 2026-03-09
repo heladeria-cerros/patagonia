@@ -52,6 +52,7 @@ const order = {
     address: "",
     reference: "",
     payment: null,
+    orderNumber: null,
     get totalPrice() {
         return this.items.reduce((sum, item) => sum + item.price, 0);
     }
@@ -334,25 +335,30 @@ function confirmOrder() {
 
     order.payment = payment.value;
 
-    saveOrder();
+    show("screen-processing");
 
-    if (order.payment === "Transferencia") {
+    saveOrder()
+        .then(() => {
+            if (order.payment === "Transferencia") {
+                const total = order.totalPrice + deliveryPrice;
+                const fmt = n => n.toLocaleString("es-AR");
+                document.getElementById("transfer-total").innerText = "$" + fmt(total);
+                show("screen-transfer");
+            } else {
+                showOrderReady();
+            }
+        })
+        .catch(error => {
+            console.error("Error al guardar el pedido:", error);
+            alert("Hubo un error al procesar tu pedido. Por favor intentá de nuevo.");
+            show("screen-summary");
+        });
 
-        const total = order.totalPrice + deliveryPrice;
+}
 
-        const fmt = n => n.toLocaleString("es-AR");
-
-        document.getElementById("transfer-total").innerText =
-            "$" + fmt(total);
-
-        show("screen-transfer");
-
-    } else {
-
-        sendWhatsApp();
-
-    }
-
+function showOrderReady() {
+    document.getElementById("order-number-display").innerText = order.orderNumber || "---";
+    show("screen-order-ready");
 }
 
 function sendWhatsApp() {
@@ -363,10 +369,12 @@ function sendWhatsApp() {
         itemsText += `${item.size}\n${item.flavors.join("\n")}\n\n`;
     });
 
+    const orderNumberText = order.orderNumber ? `PEDIDO ${order.orderNumber}\n\n` : "";
+
     const message = encodeURIComponent(
         `Hola!
 
-Pedido:
+${orderNumberText}Pedido:
 
 ${itemsText}Dirección:
 ${order.address}
@@ -397,53 +405,51 @@ function goBack() {
     document.getElementById(previous).classList.remove("hidden");
 }
 
-function saveOrder() {
+async function saveOrder() {
 
     const total = order.totalPrice + deliveryPrice;
     const timestamp = Date.now();
 
-    order.items.forEach((item, index) => {
+    const promises = order.items.map(async (item, index) => {
+        const formData = new URLSearchParams();
+        formData.append("pedidoId", timestamp);
+        formData.append("itemIndex", index + 1);
+        formData.append("name", order.name);
+        formData.append("phone", order.phone);
+        formData.append("address", order.address);
+        formData.append("reference", order.reference);
+        formData.append("size", item.size);
+        formData.append("flavors", item.flavors.join(", "));
+        formData.append("payment", order.payment);
+        formData.append("total", total);
+        formData.append("returnOrder", "1");
 
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = "https://script.google.com/macros/s/AKfycbwyg7ZGAbzYVKahX_EFR7fNY9IhE_c6k9wmi0pOChMe9YLaVo9FcRt5m4ctoyVpTaFRQQ/exec";
+        try {
+            const response = await fetch(
+                "https://script.google.com/macros/s/AKfycbwN5GsLxk7vY4X6fLa5Lb832PF69hAJy8J2bpZjwwrLpVKXUPzms3kHSUsXWt1Bqo3C/exec",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
 
-        const iframeName = "hiddenFrame_" + index;
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
-        form.target = iframeName;
+            const result = await response.json();
+            
+            if (result.status === "ok" && result.orderNumber) {
+                order.orderNumber = result.orderNumber;
+            }
 
-        function addField(name, value) {
-            const input = document.createElement("input");
-            input.type = "hidden";
-            input.name = name;
-            input.value = value;
-            form.appendChild(input);
+            return result;
+        } catch (error) {
+            console.error("Error en saveOrder:", error);
+            throw error;
         }
-
-        addField("pedidoId", timestamp);
-        addField("itemIndex", index + 1);
-
-        addField("name", order.name);
-        addField("phone", order.phone);
-        addField("address", order.address);
-        addField("reference", order.reference);
-
-        addField("size", item.size);
-        addField("flavors", item.flavors.join(", "));
-
-        addField("payment", order.payment);
-        addField("total", total);
-
-        document.body.appendChild(form);
-
-        const iframe = document.createElement("iframe");
-        iframe.name = iframeName;
-        iframe.style.display = "none";
-
-        document.body.appendChild(iframe);
-
-        form.submit();
-
     });
+
+    await Promise.all(promises);
 
 }
