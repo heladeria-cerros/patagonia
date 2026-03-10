@@ -223,10 +223,10 @@ function updateProgressBar(screenId) {
     });
 }
 
-function show(screen) {
+function show(screen, pushHistory = true) {
     const current = document.querySelector(".screen:not(.hidden)");
 
-    if (current) {
+    if (pushHistory && current && current.id !== screen) {
         historyStack.push(current.id);
     }
 
@@ -254,8 +254,12 @@ function show(screen) {
 
 function startOrder() {
     resetOrderState();
-    show("screen-size");
+    show("screen-welcome", false);
     document.querySelector(".order-shell").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function beginOrderFlow() {
+    show("screen-size");
 }
 
 function selectSize(size, price, max) {
@@ -619,12 +623,7 @@ function goBack() {
     if (historyStack.length === 0) return;
 
     const previous = historyStack.pop();
-
-    document.querySelectorAll(".screen").forEach(s => {
-        s.classList.add("hidden");
-    });
-
-    document.getElementById(previous).classList.remove("hidden");
+    show(previous, false);
 }
 
 async function saveOrder() {

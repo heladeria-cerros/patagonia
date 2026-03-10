@@ -71,7 +71,13 @@
                 <div class="price-box" id="price-box-list">
                 </div>
 
-                <button class="btn-primary" onclick="startOrder()">Empezar pedido →</button>
+                <div class="delivery-info-box">
+                    <p class="delivery-info-title">📦 Información de reparto</p>
+                    <p class="delivery-info-line">Horarios de reparto: entre las 21:00 y las 23:30 hs.</p>
+                    <p class="delivery-info-line">Tiempo estimado de entrega: entre 20 y 30 minutos.</p>
+                </div>
+
+                <button class="btn-primary" onclick="beginOrderFlow()">Empezar pedido →</button>
             </section>
 
             <!-- TAMAÑO -->
@@ -193,6 +199,10 @@
 
             <!-- TRANSFERENCIA -->
             <section id="screen-transfer" class="screen hidden">
+                <div class="screen-header">
+                    <button class="back-btn" onclick="goBack()" title="Volver">←</button>
+                </div>
+
                 <div class="screen-icon">📲</div>
                 <h2 class="screen-title">Transferencia bancaria</h2>
                 <p class="screen-subtitle">Realizá el pago y avisanos</p>

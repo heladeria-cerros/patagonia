@@ -545,6 +545,28 @@ body {
     margin: 0 12px;
 }
 
+.delivery-info-box {
+    margin: 10px 0 8px;
+    padding: 10px 12px;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-md);
+    background: #fffdf8;
+    text-align: left;
+}
+
+.delivery-info-title {
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--teal);
+    margin-bottom: 4px;
+}
+
+.delivery-info-line {
+    font-size: .78rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
 /* ============================================================
    SIZE OPTIONS
    ============================================================ */
