@@ -916,6 +916,40 @@ body {
         font-weight: 700;
     }
 
+.footer-link {
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+    .footer-link:hover {
+        text-decoration: underline;
+    }
+
+/* ============================================================
+   STORE INFO (pantalla confirmación)
+   ============================================================ */
+.store-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin: 8px 0 4px;
+    font-size: .78rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.store-info-link {
+    color: var(--teal);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+    .store-info-link:hover {
+        text-decoration: underline;
+    }
+
 /* ============================================================
    SPINNER (Procesando pedido)
    ============================================================ */
@@ -1015,9 +1049,91 @@ body {
     }
 }
 
-/* =========================================================
-FLAVOR CARD VISUAL UPGRADE
-========================================================= */
+/* ============================================================
+   PROMO CODE
+   ============================================================ */
+.promo-group {
+    margin-top: 6px;
+    margin-bottom: 8px;
+}
+
+.promo-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--cream);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0 12px;
+    transition: border-color var(--transition);
+}
+
+.promo-input-wrap:focus-within {
+    border-color: var(--gold-dark);
+    border-style: solid;
+    background: var(--white);
+}
+
+.promo-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.promo-input {
+    flex: 1;
+    min-height: 40px;
+    padding: 8px 0;
+    font-family: 'Nunito', sans-serif;
+    font-size: .88rem;
+    font-weight: 700;
+    color: var(--teal);
+    background: transparent;
+    border: none;
+    outline: none;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.promo-input::placeholder {
+    color: #BBBBBB;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.promo-ok {
+    margin-top: 4px;
+    font-size: .76rem;
+    font-weight: 700;
+    color: var(--success);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.promo-error {
+    margin-top: 4px;
+    font-size: .76rem;
+    font-weight: 700;
+    color: var(--error);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.summary-promo {
+    font-weight: 700;
+    color: var(--success);
+}
+
+.summary-free {
+    font-weight: 700;
+    color: var(--success);
+}
+
+/* ============================================================
+   FLAVOR CARD VISUAL UPGRADE
+   ============================================================ */
 
 .flavor-card {
     display: flex;

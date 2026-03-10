@@ -9,8 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="preload" as="image" href="assets/flavors/default.png">
 </head>
 
 <body>
@@ -70,24 +68,7 @@
                 <h2 class="screen-title">¡Bienvenido!</h2>
                 <p class="screen-subtitle">Pedido con delivery a domicilio</p>
 
-                <div class="price-box">
-                    <div class="price-row">
-                        <span class="price-label">½ kg</span>
-                        <span class="price-value">$15.000</span>
-                        <span class="price-note">hasta 3 sabores</span>
-                    </div>
-                    <div class="price-divider"></div>
-                    <div class="price-row">
-                        <span class="price-label">1 kg</span>
-                        <span class="price-value">$24.000</span>
-                        <span class="price-note">hasta 4 sabores</span>
-                    </div>
-                    <div class="price-divider"></div>
-                    <div class="price-row">
-                        <span class="price-label">🛵 Delivery</span>
-                        <span class="price-value">$4.000</span>
-                        <span class="price-note">radio 5 km</span>
-                    </div>
+                <div class="price-box" id="price-box-list">
                 </div>
 
                 <button class="btn-primary" onclick="startOrder()">Empezar pedido →</button>
@@ -103,20 +84,7 @@
                 <h2 class="screen-title">¿Cuánto querés?</h2>
                 <p class="screen-subtitle">Elegí el tamaño del pote</p>
 
-                <div class="options size-options">
-                    <div class="card size-card" onclick="selectSize('1/2 kg',15000,3)">
-                        <div class="size-emoji">🥄</div>
-                        <h3>½ kg</h3>
-                        <p class="size-price">$15.000</p>
-                        <p class="size-flavors">Hasta 3 sabores</p>
-                    </div>
-
-                    <div class="card size-card" onclick="selectSize('1 kg',24000,4)">
-                        <div class="size-emoji">🍨</div>
-                        <h3>1 kg</h3>
-                        <p class="size-price">$24.000</p>
-                        <p class="size-flavors">Hasta 4 sabores</p>
-                    </div>
+                <div class="options size-options" id="size-cards-container">
                 </div>
             </section>
 
@@ -174,6 +142,15 @@
                     <input id="reference" class="field-input" placeholder="Ej: casa verde con portón blanco" type="text">
                 </div>
 
+                <div class="promo-group">
+                    <div class="promo-input-wrap">
+                        <span class="promo-icon">🏷️</span>
+                        <input id="promo-code" class="promo-input" placeholder="Código de descuento (opcional)" type="text" autocomplete="off" autocapitalize="characters">
+                    </div>
+                    <p id="promo-ok" class="promo-ok hidden"></p>
+                    <p id="promo-error" class="promo-error hidden">Código inválido o no está activo.</p>
+                </div>
+
                 <button id="address-next" class="btn-primary" onclick="goSummary()" disabled>
                     Ver resumen →
                 </button>
@@ -225,7 +202,7 @@
                         <span class="transfer-label">Alias</span>
                         <div class="transfer-value-group">
                             <span class="transfer-value" id="transfer-alias">heladeria.cerros</span>
-                            <button class="btn-copy" onclick="copyAlias()" title="Copiar alias">
+                            <button class="btn-copy" onclick="copyAlias(event)" title="Copiar alias">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -275,6 +252,8 @@
     <!-- FOOTER -->
     <footer class="site-footer">
         <p>Heladería Cerros · Lago Puelo, Chubut</p>
+        <p>Av. Los Notros 322</p>
+        <p><a href="https://wa.me/5492944299457" class="footer-link">+54 9 2944 29-9457</a></p>
         <p>Delivery dentro de un radio de 5 km</p>
     </footer>
 

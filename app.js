@@ -1,11 +1,143 @@
 ﻿let historyStack = [];
 
+
+// ============================================================
+// PRECIOS — Única fuente de verdad
+// Modificar aquí para actualizar toda la app automáticamente
+// ============================================================
+const PRICES = {
+    delivery: 4000,
+    sizes: [
+        { id: "half", label: "½ kg", display: "½ kg", emoji: "🥄", price: 15000, maxFlavors: 3 },
+        { id: "one",  label: "1 kg", display: "1 kg", emoji: "🍨", price: 24000, maxFlavors: 4 }
+    ]
+};
+
+// Alias para compatibilidad interna
+const deliveryPrice = PRICES.delivery;
+
 document.addEventListener("DOMContentLoaded", () => {
     const bar = document.getElementById("progress-bar");
     if (bar) bar.style.display = "none";
+
+    renderPriceBox();
+    renderSizeCards();
 });
 
-const deliveryPrice = 4000;
+function fmt(n) {
+    return n.toLocaleString("es-AR");
+}
+
+function renderPriceBox() {
+    const box = document.getElementById("price-box-list");
+    if (!box) return;
+
+    let html = "";
+    PRICES.sizes.forEach((s, i) => {
+        if (i > 0) html += `<div class="price-divider"></div>`;
+        html += `
+            <div class="price-row">
+                <span class="price-label">${s.display}</span>
+                <span class="price-value">$${fmt(s.price)}</span>
+                <span class="price-note">hasta ${s.maxFlavors} sabores</span>
+            </div>`;
+    });
+    html += `
+        <div class="price-divider"></div>
+        <div class="price-row">
+            <span class="price-label">🛵 Delivery</span>
+            <span class="price-value">$${fmt(PRICES.delivery)}</span>
+            <span class="price-note">radio 5 km</span>
+        </div>`;
+
+    box.innerHTML = html;
+}
+
+function renderSizeCards() {
+    const container = document.getElementById("size-cards-container");
+    if (!container) return;
+
+    container.innerHTML = PRICES.sizes.map(s => `
+        <div class="card size-card" onclick="selectSize('${s.label}', ${s.price}, ${s.maxFlavors})">
+            <div class="size-emoji">${s.emoji}</div>
+            <h3>${s.display}</h3>
+            <p class="size-price">$${fmt(s.price)}</p>
+            <p class="size-flavors">Hasta ${s.maxFlavors} sabores</p>
+        </div>`
+    ).join("");
+}
+
+// ============================================================
+// PROMOCIONES
+// Tipos: 'percent' | 'fixed' | 'free_delivery'
+// active: true/false para activar o desactivar sin borrar
+// ============================================================
+const promos = [
+    {
+        code: "CERROS10",
+        active: false,
+        type: "percent",
+        value: 10,
+        description: "10% de descuento en helado"
+    },
+    {
+        code: "VERANO2025",
+        active: false,
+        type: "percent",
+        value: 15,
+        description: "15% de descuento en helado"
+    },
+    {
+        code: "DESCUENTO5000",
+        active: false,
+        type: "fixed",
+        value: 5000,
+        description: "$5.000 de descuento"
+    },
+    {
+        code: "DELIVERYFREE",
+        active: false,
+        type: "free_delivery",
+        value: 0,
+        description: "Delivery gratis"
+    },
+    {
+        code: "PROMO2024",
+        active: false,
+        type: "percent",
+        value: 20,
+        description: "20% de descuento (inactiva)"
+    }
+];
+
+function findPromo(code) {
+    if (!code) return null;
+    return promos.find(
+        p => p.code === code.trim().toUpperCase() && p.active
+    ) || null;
+}
+
+function calcDiscount(promo, helado) {
+    if (!promo) return { discount: 0, deliveryFinal: PRICES.delivery };
+    if (promo.type === "percent")
+        return { discount: Math.round(helado * promo.value / 100), deliveryFinal: PRICES.delivery };
+    if (promo.type === "fixed")
+        return { discount: Math.min(promo.value, helado), deliveryFinal: PRICES.delivery };
+    if (promo.type === "free_delivery")
+        return { discount: PRICES.delivery, deliveryFinal: 0 };
+    return { discount: 0, deliveryFinal: PRICES.delivery };
+}
+
+// Calcula el total final del pedido (helado + delivery - descuento)
+function calcFinalTotal() {
+    const { discount, deliveryFinal } = calcDiscount(order.promoApplied, order.totalPrice);
+    return {
+        helado:       order.totalPrice,
+        delivery:     deliveryFinal,
+        discount:     discount,
+        total:        order.totalPrice + deliveryFinal - discount
+    };
+}
 
 const flavors = [
     "CHOCOLATE BLANCO C/FRAMBUESA",
@@ -53,6 +185,8 @@ const order = {
     reference: "",
     payment: null,
     orderNumber: null,
+    promoCode: "",
+    promoApplied: null,
     get totalPrice() {
         return this.items.reduce((sum, item) => sum + item.price, 0);
     }
@@ -274,55 +408,96 @@ function addAnotherPot() {
 }
 
 function goSummary() {
-    const nameInput = document.getElementById("name");
-    const phoneInput = document.getElementById("phone");
+    const nameInput    = document.getElementById("name");
+    const phoneInput   = document.getElementById("phone");
     const addressInput = document.getElementById("address");
+    const promoInput   = document.getElementById("promo-code");
 
-    const nameError = document.getElementById("name-error");
-    const phoneError = document.getElementById("phone-error");
+    const nameError    = document.getElementById("name-error");
+    const phoneError   = document.getElementById("phone-error");
     const addressError = document.getElementById("address-error");
 
-    const nameValid = nameInput.value.trim() !== "";
-    const phoneValid = phoneInput.value.trim() !== "";
+    const nameValid    = nameInput.value.trim() !== "";
+    const phoneValid   = phoneInput.value.trim() !== "";
     const addressValid = addressInput.value.trim() !== "";
 
     nameError.classList.toggle("hidden", nameValid);
     phoneError.classList.toggle("hidden", phoneValid);
     addressError.classList.toggle("hidden", addressValid);
 
-    if (!(nameValid && phoneValid && addressValid)) {
-        return;
+    if (!(nameValid && phoneValid && addressValid)) return;
+
+    // Validar código promo (opcional)
+    const rawCode = promoInput ? promoInput.value.trim() : "";
+    if (rawCode !== "") {
+        const promo = findPromo(rawCode);
+        if (!promo) {
+            showPromoError(rawCode);
+            return;
+        }
+        order.promoCode    = rawCode.toUpperCase();
+        order.promoApplied = promo;
+        showPromoFeedback(promo);
+    } else {
+        order.promoCode    = "";
+        order.promoApplied = null;
     }
 
-    order.name = nameInput.value.trim();
-    order.phone = phoneInput.value.trim();
-    order.address = addressInput.value.trim();
+    order.name      = nameInput.value.trim();
+    order.phone     = phoneInput.value.trim();
+    order.address   = addressInput.value.trim();
     order.reference = document.getElementById("reference").value.trim();
 
-    const total = order.totalPrice + deliveryPrice;
-    const fmt = n => n.toLocaleString("es-AR");
+    const { helado, delivery, discount, total } = calcFinalTotal();
 
     let itemsHTML = "";
-    order.items.forEach((item, index) => {
+    order.items.forEach(item => {
         itemsHTML += `
         <div class="summary-item">
-            <p><strong>${item.size}</strong></p>
+            <p><strong>${item.size}</strong> — $${fmt(item.price)}</p>
             <p>${item.flavors.join(", ")}</p>
-        </div>
-        `;
+        </div>`;
     });
 
-    document.getElementById("order-summary").innerHTML =
-        `
+    let promoHTML = "";
+    if (order.promoApplied) {
+        const promoLine = order.promoApplied.type === "free_delivery"
+            ? `🛵 Delivery: <span class="summary-free">GRATIS</span>`
+            : `🏷️ Descuento (${order.promoCode}): -$${fmt(discount)}`;
+        promoHTML = `<p class="summary-promo">${promoLine}</p>`;
+    }
+
+    const deliveryHTML = order.promoApplied?.type === "free_delivery"
+        ? `<p>🛵 Delivery: <span class="summary-free">GRATIS</span></p>`
+        : `<p>🛵 Delivery: $${fmt(delivery)}</p>`;
+
+    document.getElementById("order-summary").innerHTML = `
         ${itemsHTML}
         <div class="summary-divider"></div>
         <p><strong>Dirección:</strong> ${order.address}${order.reference ? " · " + order.reference : ""}</p>
-        <p>🍦 Helado: $${fmt(order.totalPrice)}</p>
-        <p>🛵 Delivery: $${fmt(deliveryPrice)}</p>
+        <p>🍦 Helado: $${fmt(helado)}</p>
+        ${deliveryHTML}
+        ${promoHTML}
         <h3>Total: $${fmt(total)}</h3>
-        `;
+    `;
 
     show("screen-summary");
+}
+
+function showPromoError(code) {
+    const el = document.getElementById("promo-error");
+    if (el) {
+        el.classList.remove("hidden");
+        setTimeout(() => el.classList.add("hidden"), 4000);
+    }
+}
+
+function showPromoFeedback(promo) {
+    const el = document.getElementById("promo-ok");
+    if (el) {
+        el.innerText = `✓ ${promo.description}`;
+        el.classList.remove("hidden");
+    }
 }
 
 function confirmOrder() {
@@ -341,8 +516,7 @@ function confirmOrder() {
     saveOrder()
         .then(() => {
             if (order.payment === "Transferencia") {
-                const total = order.totalPrice + deliveryPrice;
-                const fmt = n => n.toLocaleString("es-AR");
+                const { total } = calcFinalTotal();
                 document.getElementById("transfer-total").innerText = "$" + fmt(total);
                 show("screen-transfer");
             } else {
@@ -363,14 +537,22 @@ function showOrderReady() {
 }
 
 function sendWhatsApp() {
-    const total = order.totalPrice + deliveryPrice;
+    const { helado, delivery, discount, total } = calcFinalTotal();
 
     let itemsText = "";
-    order.items.forEach((item, index) => {
-        itemsText += `${item.size}\n${item.flavors.join("\n")}\n\n`;
+    order.items.forEach(item => {
+        itemsText += `${item.size} ($${fmt(item.price)})\n${item.flavors.join("\n")}\n\n`;
     });
 
     const orderNumberText = order.orderNumber ? `PEDIDO ${order.orderNumber}\n\n` : "";
+
+    let promoText = "";
+    if (order.promoApplied) {
+        const promoLine = order.promoApplied.type === "free_delivery"
+            ? `Delivery: GRATIS (${order.promoCode})`
+            : `Descuento (${order.promoCode}): -$${fmt(discount)}`;
+        promoText = `\n${promoLine}`;
+    }
 
     const message = encodeURIComponent(
         `Hola!
@@ -383,7 +565,9 @@ ${order.address}
 Referencia:
 ${order.reference}
 
-Total: $${total}
+Helado: $${fmt(helado)}
+Delivery: $${fmt(delivery)}${promoText}
+Total: $${fmt(total)}
 
 Pago: ${order.payment}`
     );
@@ -406,18 +590,26 @@ function resetOrderState() {
     order.reference = "";
     order.payment = null;
     order.orderNumber = null;
+    order.promoCode = "";
+    order.promoApplied = null;
 
     historyStack = [];
 
-    const nameInput = document.getElementById("name");
-    const phoneInput = document.getElementById("phone");
-    const addressInput = document.getElementById("address");
+    const nameInput      = document.getElementById("name");
+    const phoneInput     = document.getElementById("phone");
+    const addressInput   = document.getElementById("address");
     const referenceInput = document.getElementById("reference");
+    const promoInput     = document.getElementById("promo-code");
+    const promoOk        = document.getElementById("promo-ok");
+    const promoError     = document.getElementById("promo-error");
 
-    if (nameInput) nameInput.value = "";
-    if (phoneInput) phoneInput.value = "";
-    if (addressInput) addressInput.value = "";
+    if (nameInput)      nameInput.value = "";
+    if (phoneInput)     phoneInput.value = "";
+    if (addressInput)   addressInput.value = "";
     if (referenceInput) referenceInput.value = "";
+    if (promoInput)     promoInput.value = "";
+    if (promoOk)        promoOk.classList.add("hidden");
+    if (promoError)     promoError.classList.add("hidden");
 
     const paymentInputs = document.querySelectorAll("input[name='payment']");
     paymentInputs.forEach(input => input.checked = false);
@@ -437,8 +629,8 @@ function goBack() {
 
 async function saveOrder() {
 
-    const total = order.totalPrice + deliveryPrice;
-    const timestamp = Date.now();
+const { discount, total } = calcFinalTotal();
+const timestamp = Date.now();
 
     const promises = order.items.map(async (item, index) => {
         const formData = new URLSearchParams();
@@ -451,28 +643,22 @@ async function saveOrder() {
         formData.append("size", item.size);
         formData.append("flavors", item.flavors.join(", "));
         formData.append("payment", order.payment);
+        formData.append("promoCode", order.promoCode || "");
+        formData.append("promoDesc", order.promoApplied ? order.promoApplied.description : "");
+        formData.append("discount", discount);
         formData.append("total", total);
         formData.append("returnOrder", "1");
 
         try {
             const response = await fetch(
                 "https://script.google.com/macros/s/AKfycbwN5GsLxk7vY4X6fLa5Lb832PF69hAJy8J2bpZjwwrLpVKXUPzms3kHSUsXWt1Bqo3C/exec",
-                {
-                    method: "POST",
-                    body: formData
-                }
+                { method: "POST", body: formData }
             );
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const result = await response.json();
-            
             if (result.status === "ok" && result.orderNumber) {
                 order.orderNumber = result.orderNumber;
             }
-
             return result;
         } catch (error) {
             console.error("Error en saveOrder:", error);
@@ -484,7 +670,7 @@ async function saveOrder() {
 
 }
 
-function copyAlias() {
+function copyAlias(event) {
     const alias = document.getElementById("transfer-alias").innerText;
     
     navigator.clipboard.writeText(alias).then(() => {
