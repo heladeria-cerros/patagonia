@@ -84,7 +84,8 @@ body {
     position: relative;
     min-height: 100svh;
     background-image: url('assets/cerros-local-puelo.jpg');
-    background-size: cover;
+    background-size: contain;
+    background-repeat: no-repeat;
     background-position: center;
     display: flex;
     align-items: center;
