@@ -6,7 +6,7 @@
 // Modificar aquí para actualizar toda la app automáticamente
 // ============================================================
 const PRICES = {
-    delivery: 4000,
+    delivery: 2000,
     sizes: [
         { id: "half", label: "½ kg", display: "½ kg", emoji: "🥄", price: 15000, maxFlavors: 3 },
         { id: "one",  label: "1 kg", display: "1 kg", emoji: "🍨", price: 24000, maxFlavors: 4 }
