@@ -8,8 +8,8 @@
 const PRICES = {
     delivery: 5000,
     sizes: [
-        { id: "half", label: "½ kg", display: "½ kg", emoji: "🥄", price: 16000, maxFlavors: 3 },
-        { id: "one",  label: "1 kg", display: "1 kg", emoji: "🍨", price: 26000, maxFlavors: 4 }
+        { id: "half", label: "½ kg", display: "½ kg", emoji: "🥄", price: 17000, maxFlavors: 3 },
+        { id: "one",  label: "1 kg", display: "1 kg", emoji: "🍨", price: 28000, maxFlavors: 4 }
     ]
 };
 
